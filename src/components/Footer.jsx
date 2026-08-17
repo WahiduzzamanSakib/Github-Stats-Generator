@@ -1,5 +1,4 @@
 import { FiGithub, FiLinkedin, FiGlobe, FiHeart } from "react-icons/fi";
-import { MdEmail } from "react-icons/md";
 
 const Footer = ({ darkMode }) => {
   const borderClass = darkMode ? "border-slate-800" : "border-slate-200";
@@ -36,7 +35,7 @@ const Footer = ({ darkMode }) => {
             <FiGithub className="w-5 h-5" />
           </a>
           <a
-            href="www.linkedin.com/in/waheduzzaman-md"
+            href="https://www.linkedin.com/in/waheduzzaman-md"
             target="_blank"
             rel="noopener noreferrer"
             className={`transition-colors duration-200 ${hoverClass}`}

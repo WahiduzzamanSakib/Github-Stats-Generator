@@ -1,17 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FiSearch, FiLoader, FiAlertCircle, FiX } from "react-icons/fi";
 
 const SearchBox = ({ onSearch, onReset, showReset, loading, error, setError, initialUsername }) => {
   const [usernameInput, setUsernameInput] = useState(initialUsername || "");
+  const [prevInitialUsername, setPrevInitialUsername] = useState(initialUsername);
 
-  // Sync state with prop when initialUsername changes (e.g. from URL search params)
-  useEffect(() => {
-    if (initialUsername) {
-      setUsernameInput(initialUsername);
-    } else {
-      setUsernameInput("");
-    }
-  }, [initialUsername]);
+  if (initialUsername !== prevInitialUsername) {
+    setPrevInitialUsername(initialUsername);
+    setUsernameInput(initialUsername || "");
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();

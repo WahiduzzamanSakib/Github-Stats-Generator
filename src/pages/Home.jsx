@@ -25,15 +25,6 @@ const Home = () => {
   const [includeAllCommits, setIncludeAllCommits] = useState(true);
   const [countPrivate, setCountPrivate] = useState(true);
 
-  // Check URL query parameters for username on load (to support sharing)
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const userParam = params.get("username");
-    if (userParam) {
-      handleSearch(userParam);
-    }
-  }, []);
-
   const handleSearch = async (user) => {
     setLoading(true);
     setError(null);
@@ -62,6 +53,18 @@ const Home = () => {
     const newUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
     window.history.pushState({ path: newUrl }, "", newUrl);
   };
+
+  // Check URL query parameters for username on load (to support sharing)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const userParam = params.get("username");
+    if (userParam) {
+      const timer = setTimeout(() => {
+        handleSearch(userParam);
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   const handleStatsHostTypeChange = (type) => {
     setStatsHostType(type);
@@ -127,6 +130,30 @@ const Home = () => {
     ? `${window.location.origin}${window.location.pathname}?username=${userData.login}`
     : "";
 
+  const selectedTheme = getStatsTheme();
+
+  // Build markdown parameters dynamically to match UI selection
+  const mdStatsParams = darkMode
+    ? `theme=${selectedTheme}&bg_color=00000000`
+    : `theme=${selectedTheme}&bg_color=ffffff&title_color=0f172a&text_color=334155&icon_color=4f46e5`;
+
+  const mdLangParams = darkMode
+    ? `theme=${selectedTheme}&bg_color=00000000`
+    : `theme=${selectedTheme}&bg_color=ffffff&title_color=0f172a&text_color=334155`;
+
+  const streakThemeMap = {
+    default: "radial",
+    dracula: "dracula",
+    "tokyo-night": "tokyonight",
+    emerald: "nord",
+    amber: "radical",
+  };
+  const selectedStreakTheme = streakThemeMap[theme] || "radial";
+
+  const mdStreakParams = darkMode
+    ? `theme=${selectedStreakTheme}&background=00000000&ring=7aa2f7&fire=f97316&currStreakNum=ffffff&currStreakLabel=9ece6a&sideNums=ffffff&sideLabels=9ece6a&dates=a9b1d6&border=00000000`
+    : `theme=${selectedStreakTheme}&background=ffffff&ring=6366f1&fire=f97316&currStreakNum=000000&currStreakLabel=475569&sideNums=000000&sideLabels=475569&dates=475569&border=ffffff`;
+
   const markdownSnippet = userData
     ? `### GitHub Profile Stats
 
@@ -134,11 +161,11 @@ const Home = () => {
 ![Profile Views](https://komarev.com/ghpvc/?username=${userData.login}&color=${getBadgeColor()}&style=flat-square)
 
 <!-- Stats Cards -->
-[![GitHub Stats](${statsHost}/api?username=${userData.login}&show_icons=true&theme=tokyonight&bg_color=30,070714,0d0d2b&hide_border=true${includeAllCommits ? "&include_all_commits=true" : ""}${countPrivate ? "&count_private=true" : ""})](https://github.com/anuraghazra/github-readme-stats)
+[![GitHub Stats](${statsHost}/api?username=${userData.login}&show_icons=true&${mdStatsParams}&hide_border=true${includeAllCommits ? "&include_all_commits=true" : ""}${countPrivate ? "&count_private=true" : ""})](https://github.com/${userData.login})
 
-[![Top Languages](${statsHost}/api/top-langs/?username=${userData.login}&layout=compact&theme=tokyonight&bg_color=30,070714,0d0d2b&hide_border=true)](https://github.com/anuraghazra/github-readme-stats)
+[![Top Languages](${statsHost}/api/top-langs/?username=${userData.login}&layout=compact&${mdLangParams}&hide_border=true)](https://github.com/${userData.login})
 
-[![GitHub Streak](https://streak-stats.demolab.com/?user=${userData.login}&theme=tokyonight&background=070714&ring=7aa2f7&fire=f97316&currStreakNum=ffffff&currStreakLabel=9ece6a&sideNums=ffffff&sideLabels=9ece6a&dates=a9b1d6&border=00000000&hide_border=true)](https://streak-stats.demolab.com/)`
+[![GitHub Streak](https://streak-stats.demolab.com/?user=${userData.login}&${mdStreakParams}&hide_border=true)](https://github.com/${userData.login})`
     : "";
 
   return (
@@ -211,21 +238,26 @@ const Home = () => {
 
               {/* Stats API Configuration Card */}
               <div className={`p-5 rounded-2xl border backdrop-blur-md shadow-lg ${themeCardBg} ${themeBorderClasses}`}>
-                <h4 className="font-bold mb-3 flex items-center gap-2 text-sm text-slate-300">
-                  <FiSettings className="w-4 h-4 text-black dark:text-indigo-400" /> Stats API Configuration
+                <h4 className={`font-bold mb-3 flex items-center gap-2 text-sm ${darkMode ? "text-slate-300" : "text-slate-700"}`}>
+                  <FiSettings className={`w-4 h-4 ${darkMode ? "text-indigo-400" : "text-indigo-600"}`} /> Stats API Configuration
                 </h4>
-                <p className="text-xs text-slate-400 mb-4 leading-relaxed">
+                <p className={`text-xs mb-4 leading-relaxed font-semibold ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
                   Select which server to use for rendering statistics and configure card options.
                 </p>
                 <div className="flex flex-col gap-3">
                   <select
                     value={statsHostType}
                     onChange={(e) => handleStatsHostTypeChange(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 text-slate-300 text-xs px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
+                    className={`w-full border text-xs px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer font-semibold ${darkMode
+                        ? "bg-slate-950 border-slate-800 text-slate-300"
+                        : "bg-white border-slate-300 text-slate-750"
+                      }`}
                   >
-                    <option value="default">Default (github-readme-stats)</option>
-                    <option value="extended">Backup (github-stats-extended)</option>
-                    <option value="custom">Custom Self-Hosted URL</option>
+                    <option value="default" className={darkMode ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>
+                      Default (github-stats-extended)</option>
+                    <option value="extended" className={darkMode ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>
+                      Backup (github-readme-stats)</option>
+                    <option value="custom" className={darkMode ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Custom Self-Hosted URL</option>
                   </select>
                   {statsHostType === "custom" && (
                     <input
@@ -233,27 +265,34 @@ const Home = () => {
                       value={customStatsHost}
                       onChange={(e) => handleCustomStatsHostChange(e.target.value)}
                       placeholder="https://your-custom-instance.vercel.app"
-                      className="w-full bg-slate-950 border border-slate-800 text-slate-300 text-xs px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                      className={`w-full border text-xs px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-semibold ${darkMode
+                          ? "bg-slate-950 border-slate-800 text-slate-300"
+                          : "bg-white border-slate-300 text-slate-750"
+                        }`}
                     />
                   )}
-                  
+
                   {/* Commits configuration checkboxes */}
-                  <div className="mt-2 flex flex-col gap-2 pt-2 border-t border-slate-850">
-                    <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer hover:text-slate-300">
+                  <div className={`mt-2 flex flex-col gap-2 pt-2 border-t ${darkMode ? "border-slate-800" : "border-slate-200"}`}>
+                    <label className={`flex items-center gap-2 text-xs cursor-pointer font-semibold ${darkMode ? "text-slate-400 hover:text-slate-200" : "text-slate-600 hover:text-slate-800"
+                      }`}>
                       <input
                         type="checkbox"
                         checked={includeAllCommits}
                         onChange={(e) => setIncludeAllCommits(e.target.checked)}
-                        className="rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-indigo-500/50 w-4 h-4"
+                        className={`rounded w-4 h-4 cursor-pointer focus:ring-indigo-500/50 ${darkMode ? "border-slate-800 bg-slate-950 text-indigo-500" : "border-slate-300 bg-white text-indigo-600"
+                          }`}
                       />
                       <span>Include All-Time Commits</span>
                     </label>
-                    <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer hover:text-slate-300">
+                    <label className={`flex items-center gap-2 text-xs cursor-pointer font-semibold ${darkMode ? "text-slate-400 hover:text-slate-200" : "text-slate-600 hover:text-slate-800"
+                      }`}>
                       <input
                         type="checkbox"
                         checked={countPrivate}
                         onChange={(e) => setCountPrivate(e.target.checked)}
-                        className="rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-indigo-500/50 w-4 h-4"
+                        className={`rounded w-4 h-4 cursor-pointer focus:ring-indigo-500/50 ${darkMode ? "border-slate-800 bg-slate-950 text-indigo-500" : "border-slate-300 bg-white text-indigo-600"
+                          }`}
                       />
                       <span>Count Private Contributions</span>
                     </label>
@@ -263,10 +302,10 @@ const Home = () => {
 
               {/* Share Card */}
               <div className={`p-5 rounded-2xl border backdrop-blur-md shadow-lg ${themeCardBg} ${themeBorderClasses}`}>
-                <h4 className="font-bold mb-3 flex items-center gap-2 text-sm text-slate-300">
-                  <FiShare2 className="w-4 h-4 text-black dark:text-indigo-400" /> Share Profile Page
+                <h4 className={`font-bold mb-3 flex items-center gap-2 text-sm ${darkMode ? "text-slate-300" : "text-slate-700"}`}>
+                  <FiShare2 className={`w-4 h-4 ${darkMode ? "text-indigo-400" : "text-indigo-600"}`} /> Share Profile Page
                 </h4>
-                <p className="text-xs text-slate-400 mb-4">
+                <p className={`text-xs mb-4 font-semibold ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
                   Share this generated profile view dashboard directly with others using this link.
                 </p>
                 <div className="flex gap-2">
@@ -274,7 +313,8 @@ const Home = () => {
                     type="text"
                     readOnly
                     value={shareUrl}
-                    className="flex-1 bg-slate-950/60 border border-slate-800 text-slate-300 text-xs px-3 py-2 rounded-xl focus:outline-none"
+                    className={`flex-1 border text-xs px-3 py-2 rounded-xl focus:outline-none font-semibold ${darkMode ? "bg-slate-950/60 border-slate-800 text-slate-300" : "bg-white border-slate-300 text-slate-750"
+                      }`}
                   />
                   <CopyButton text={shareUrl} label="Copy" />
                 </div>
@@ -303,15 +343,16 @@ const Home = () => {
               {/* Markdown Code Section */}
               <div className={`p-5 sm:p-6 rounded-2xl border backdrop-blur-md shadow-lg ${themeCardBg} ${themeBorderClasses}`}>
                 <div className="flex items-center justify-between gap-4 mb-4">
-                  <h4 className="font-bold flex items-center gap-2 text-sm text-slate-300">
-                    <FiTerminal className="w-4.5 h-4.5 text-indigo-400" /> README Markdown Snippet
+                  <h4 className={`font-bold flex items-center gap-2 text-sm ${darkMode ? "text-slate-300" : "text-slate-700"}`}>
+                    <FiTerminal className={`w-4.5 h-4.5 ${darkMode ? "text-indigo-400" : "text-indigo-600"}`} /> README Markdown Snippet
                   </h4>
                   <CopyButton text={markdownSnippet} label="Copy All Markdown" />
                 </div>
-                <p className="text-xs text-slate-400 mb-4">
+                <p className={`text-xs mb-4 font-semibold ${darkMode ? "text-slate-400" : "text-slate-600"}`}>
                   Copy and paste this snippet directly into your GitHub profile README file.
                 </p>
-                <pre className="p-4 bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto text-xs text-slate-300 font-mono leading-relaxed max-h-72">
+                <pre className={`p-4 border rounded-xl overflow-x-auto text-xs font-mono leading-relaxed max-h-72 font-semibold ${darkMode ? "bg-slate-950 border-slate-800 text-slate-300" : "bg-slate-50 border-slate-200 text-slate-800"
+                  }`}>
                   {markdownSnippet}
                 </pre>
               </div>

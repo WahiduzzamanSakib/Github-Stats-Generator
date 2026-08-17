@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FiLoader, FiZap } from "react-icons/fi";
 
 const StreakCard = ({ username, theme, darkMode }) => {
@@ -17,17 +17,23 @@ const StreakCard = ({ username, theme, darkMode }) => {
   const cardTheme = themeMap[theme] || "radial";
 
   // Customize background and text colors to match our dark/light theme
-  // In dark mode we use theme=tokyonight, transparent background (00000000), 
+  // In dark mode we use the selected theme, transparent background (00000000), 
   // green labels, white text/numbers, and light blue rings to match the requested look.
   const cardUrl = darkMode
-    ? `https://streak-stats.demolab.com/?user=${username}&theme=tokyonight&background=00000000&ring=7aa2f7&fire=f97316&currStreakNum=ffffff&currStreakLabel=9ece6a&sideNums=ffffff&sideLabels=9ece6a&dates=a9b1d6&border=00000000&hide_border=true`
+    ? `https://streak-stats.demolab.com/?user=${username}&theme=${cardTheme}&background=00000000&ring=7aa2f7&fire=f97316&currStreakNum=ffffff&currStreakLabel=9ece6a&sideNums=ffffff&sideLabels=9ece6a&dates=a9b1d6&border=00000000&hide_border=true`
     : `https://streak-stats.demolab.com/?user=${username}&theme=${cardTheme}&background=ffffff&ring=6366f1&fire=f97316&currStreakNum=000000&currStreakLabel=475569&sideNums=000000&sideLabels=475569&dates=475569&border=ffffff&hide_border=true`;
 
-  // Reset states when user data or settings change
-  useEffect(() => {
+  const [prevProps, setPrevProps] = useState({ username, theme, darkMode });
+
+  if (
+    username !== prevProps.username ||
+    theme !== prevProps.theme ||
+    darkMode !== prevProps.darkMode
+  ) {
+    setPrevProps({ username, theme, darkMode });
     setError(false);
     setLoading(true);
-  }, [username, theme, darkMode]);
+  }
 
   const cardBgClass = darkMode ? "galaxy-card text-white" : "bg-white border-slate-200 shadow-sm";
   const titleColorClass = darkMode ? "text-slate-200" : "text-slate-800";
@@ -73,19 +79,27 @@ const StreakCard = ({ username, theme, darkMode }) => {
             </p>
           </div>
         ) : (
-          <img
-            src={cardUrl}
-            alt={`${username}'s GitHub Streak`}
-            className={`w-full max-w-lg transition-opacity duration-300 ${loading ? "opacity-0" : "opacity-100"}`}
-            onLoad={() => {
-              setLoading(false);
-              setError(false);
-            }}
-            onError={() => {
-              setLoading(false);
-              setError(true);
-            }}
-          />
+          <a
+            href={cardUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex justify-center cursor-pointer hover:scale-[1.02] transition-transform duration-300"
+            title="Click to view card URL in a new tab"
+          >
+            <img
+              src={cardUrl}
+              alt={`${username}'s GitHub Streak`}
+              className={`w-full max-w-lg transition-opacity duration-300 ${loading ? "opacity-0" : "opacity-100"}`}
+              onLoad={() => {
+                setLoading(false);
+                setError(false);
+              }}
+              onError={() => {
+                setLoading(false);
+                setError(true);
+              }}
+            />
+          </a>
         )}
       </div>
     </div>

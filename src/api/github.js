@@ -20,7 +20,7 @@ export const fetchGitHubUser = async (username) => {
       if (data && data.message) {
         errorMessage = data.message;
       }
-    } catch (e) {
+    } catch {
       // ignore JSON parsing errors
     }
 

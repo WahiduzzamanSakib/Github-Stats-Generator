@@ -1,6 +1,5 @@
 import { useRef } from "react";
-import { toPng } from "html-to-image";
-import { FiDownload, FiUsers, FiBookOpen, FiEye, FiExternalLink } from "react-icons/fi";
+import { FiUsers, FiBookOpen, FiEye, FiExternalLink } from "react-icons/fi";
 
 const ProfileCard = ({ userData, theme }) => {
   const cardRef = useRef(null);
