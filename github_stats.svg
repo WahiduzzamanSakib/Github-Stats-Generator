@@ -1,0 +1,44 @@
+<svg width="450" height="230" viewBox="0 0 450 230" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="descId">
+  <title id="titleId">My GitHub Stats</title>
+  <desc id="descId">Total Repositories: 42, Top Repository: github-stats-generator, Total Stars: 128, Total Commits: 1024, Followers: 56, Most Used Language: JavaScript</desc>
+  <style>
+    .bg { fill: #ffffff; stroke: #e4e2e2; stroke-width: 1; }
+    .title { font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif; fill: #0969da; }
+    .stat-label { font: 600 14px 'Segoe UI', Ubuntu, Sans-Serif; fill: #24292f; }
+    .stat-value { font: 600 14px 'Segoe UI', Ubuntu, Sans-Serif; fill: #24292f; }
+    .lang-color { fill: #f1e05a; } 
+    
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #0d1117; stroke: #30363d; }
+      .title { fill: #58a6ff; }
+      .stat-label { fill: #c9d1d9; }
+      .stat-value { fill: #c9d1d9; }
+    }
+  </style>
+
+  <rect x="0.5" y="0.5" rx="6" height="229" width="449" class="bg" />
+
+  <text x="25" y="35" class="title">My GitHub Stats</text>
+
+  <!-- Repo Info -->
+  <text x="25" y="75" class="stat-label">Total Repositories:</text>
+  <text x="220" y="75" class="stat-value">42</text>
+  
+  <text x="25" y="100" class="stat-label">Top Repository:</text>
+  <text x="220" y="100" class="stat-value">github-stats-generator</text>
+
+  <!-- Stats -->
+  <text x="25" y="125" class="stat-label">Total Stars:</text>
+  <text x="220" y="125" class="stat-value">128</text>
+
+  <text x="25" y="150" class="stat-label">Total Commits:</text>
+  <text x="220" y="150" class="stat-value">1,024</text>
+
+  <text x="25" y="175" class="stat-label">Followers:</text>
+  <text x="220" y="175" class="stat-value">56</text>
+
+  <!-- Language -->
+  <text x="25" y="200" class="stat-label">Most Used Language:</text>
+  <circle cx="226" cy="195" r="5" class="lang-color" />
+  <text x="238" y="200" class="stat-value">JavaScript (65%)</text>
+</svg>

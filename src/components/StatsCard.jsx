@@ -15,10 +15,6 @@ const StatsCard = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  // ============================================================
-  // THEME MAP
-  // ============================================================
-
   const themeMap = {
     default: "radial",
     dracula: "dracula",
@@ -29,41 +25,19 @@ const StatsCard = ({
 
   const cardTheme = themeMap[theme] || "radial";
 
-  // ============================================================
-  // FALLBACK HOSTS
-  // ============================================================
-
   const hostsChain = useMemo(() => {
-    const primary =
-      statsHost ||
-      "https://github-readme-stats.vercel.app";
+    const primary = statsHost || "https://github-readme-stats.vercel.app";
 
     const defaults = [
       "https://github-readme-stats.vercel.app",
       "https://github-stats-extended.vercel.app",
     ];
 
-    return [
-      primary,
-      ...defaults.filter((host) => host !== primary),
-    ];
+    return [primary, ...defaults.filter((host) => host !== primary)];
   }, [statsHost]);
 
   const currentHost =
-    hostsChain[hostIndex] ||
-    "https://github-readme-stats.vercel.app";
-
-  // ============================================================
-  // THEME PARAMETERS
-  // ============================================================
-
-  const statsThemeParams = darkMode
-    ? `bg_color=00000000&theme=${cardTheme}`
-    : `bg_color=ffffff&theme=${cardTheme}&title_color=0f172a&text_color=334155&icon_color=4f46e5`;
-
-  // ============================================================
-  // CARD URL
-  // ============================================================
+    hostsChain[hostIndex] || "https://github-readme-stats.vercel.app";
 
   const cardUrl = useMemo(() => {
     const params = new URLSearchParams();
@@ -98,10 +72,6 @@ const StatsCard = ({
     countPrivate,
   ]);
 
-  // ============================================================
-  // RESET WHEN PROPS CHANGE
-  // ============================================================
-
   useEffect(() => {
     setHostIndex(0);
     setSvgHtml("");
@@ -122,278 +92,129 @@ const StatsCard = ({
   // ============================================================
 
   const modifySvg = (svgText) => {
-    let text = svgText;
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(svgText, "image/svg+xml");
+      const svg = doc.querySelector("svg");
 
-    const repoCount = String(
-      Number.isFinite(Number(publicRepos))
-        ? Number(publicRepos)
-        : 0
-    );
+      if (!svg) {
+        return svgText;
+      }
 
-    // ==========================================================
-    // KEEP "Contributed to" LABEL
-    // ==========================================================
+      // 1. ORIGINAL SVG DIMENSIONS
+      let viewBox = svg.getAttribute("viewBox");
+      let svgWidth = 495;
+      let svgHeight = 195;
 
-    // Normalize possible versions of the label.
-    text = text.replace(
-      /Contributed\s+to\s*\(last\s+year\)/gi,
-      "Contributed to"
-    );
+      if (viewBox) {
+        const parts = viewBox.trim().split(/\s+/).map(Number);
+        if (parts.length === 4 && parts.every(Number.isFinite)) {
+          svgWidth = parts[2];
+          svgHeight = parts[3];
+        }
+      } else {
+        const widthAttr = parseFloat(svg.getAttribute("width"));
+        const heightAttr = parseFloat(svg.getAttribute("height"));
 
-    text = text.replace(
-      /Contributed\s+To\s*\(last\s+year\)/gi,
-      "Contributed to"
-    );
+        if (Number.isFinite(widthAttr)) svgWidth = widthAttr;
+        if (Number.isFinite(heightAttr)) svgHeight = heightAttr;
 
-    // ==========================================================
-    // METHOD 1
-    // data-testid="contribs"
-    // ==========================================================
+        svg.setAttribute("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
+      }
 
-    let countChanged = false;
+      // 2. RESPONSIVE WIDTH
+      svg.setAttribute("width", "100%");
+      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
 
-    const contribRegex =
-      /(<text\b[^>]*data-testid=["']contribs["'][^>]*>)([\s\S]*?)(<\/text>)/i;
+      // 3. FIND TARGET NODE (Contributed to / Fallbacks)
+      const allTextNodes = Array.from(svg.querySelectorAll("text"));
 
-    if (contribRegex.test(text)) {
-      text = text.replace(
-        contribRegex,
-        `$1${repoCount}$3`
-      );
-
-      countChanged = true;
-    }
-
-    // ==========================================================
-    // METHOD 2
-    // Look for the "Contributed to" label and nearby number
-    // ==========================================================
-
-    if (!countChanged) {
-      const labelRegex =
-        /Contributed\s+to(?:\s*\(last\s+year\))?/i;
-
-      const labelMatch = text.match(labelRegex);
-
-      if (labelMatch && labelMatch.index !== undefined) {
-        const labelIndex = labelMatch.index;
-
-        const sectionStart = Math.max(
-          0,
-          labelIndex - 1500
+      const targetAnchorNode =
+        allTextNodes.find((el) =>
+          /Contributed\s+to/i.test(el.textContent || "")
+        ) ||
+        allTextNodes.find((el) =>
+          /Total\s+Commits/i.test(el.textContent || "")
+        ) ||
+        allTextNodes.find((el) =>
+          /Total\s+PRs/i.test(el.textContent || "")
         );
 
-        const sectionEnd = Math.min(
-          text.length,
-          labelIndex + 4000
+      // 4. ADD TOTAL REPOSITORIES
+      if (targetAnchorNode) {
+        const x = parseFloat(targetAnchorNode.getAttribute("x")) || 25;
+        const y = parseFloat(targetAnchorNode.getAttribute("y")) || 120;
+        const textAnchor =
+          targetAnchorNode.getAttribute("text-anchor") || "start";
+        const ns = "http://www.w3.org/2000/svg";
+
+        const repoCount = String(
+          Number.isFinite(Number(publicRepos)) ? Number(publicRepos) : 0
         );
 
-        const section = text.slice(
-          sectionStart,
-          sectionEnd
-        );
+        const labelY = y + 36;
+        const valueY = labelY + 20;
 
-        // Find SVG text nodes containing numbers.
-        const numberRegex =
-          /(<text\b[^>]*>)[\s]*([\d,]+)[\s]*(<\/text>)/gi;
+        const labelColor = darkMode ? "#94a3b8" : "#475569";
+        const valueColor = darkMode ? "#ffffff" : "#0f172a";
 
-        const numbers = [
-          ...section.matchAll(numberRegex),
-        ];
+        // LABEL
+        const repoLabel = doc.createElementNS(ns, "text");
+        repoLabel.setAttribute("x", String(x));
+        repoLabel.setAttribute("y", String(labelY));
+        repoLabel.setAttribute("font-size", "12");
+        repoLabel.setAttribute("font-weight", "600");
+        repoLabel.setAttribute("fill", labelColor);
+        repoLabel.setAttribute("text-anchor", textAnchor);
+        repoLabel.textContent = "Total Repositories:";
 
-        if (numbers.length > 0) {
-          // Prefer a number appearing after the label.
-          const relativeLabelIndex =
-            labelIndex - sectionStart;
+        // NUMBER
+        const repoNumber = doc.createElementNS(ns, "text");
+        repoNumber.setAttribute("x", String(x));
+        repoNumber.setAttribute("y", String(valueY));
+        repoNumber.setAttribute("font-size", "14");
+        repoNumber.setAttribute("font-weight", "600");
+        repoNumber.setAttribute("fill", valueColor);
+        repoNumber.setAttribute("text-anchor", textAnchor);
+        repoNumber.textContent = repoCount;
 
-          const afterLabel = numbers.find(
-            (match) =>
-              match.index > relativeLabelIndex
-          );
+        // APPEND
+        svg.appendChild(repoLabel);
+        svg.appendChild(repoNumber);
 
-          const selected =
-            afterLabel || numbers[numbers.length - 1];
-
-          if (selected) {
-            const original = selected[0];
-
-            const replacement =
-              `${selected[1]}${repoCount}${selected[3]}`;
-
-            const absoluteIndex =
-              sectionStart + selected.index;
-
-            text =
-              text.slice(0, absoluteIndex) +
-              replacement +
-              text.slice(
-                absoluteIndex + original.length
-              );
-
-            countChanged = true;
-          }
+        // EXTEND VIEWBOX IF NEEDED
+        const requiredHeight = valueY + 25;
+        if (requiredHeight > svgHeight) {
+          svgHeight = requiredHeight;
+          svg.setAttribute("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
         }
       }
-    }
 
-    // ==========================================================
-    // METHOD 3
-    // XML DOM fallback
-    // ==========================================================
-
-    if (!countChanged) {
-      try {
-        const parser = new DOMParser();
-
-        const doc = parser.parseFromString(
-          text,
-          "image/svg+xml"
-        );
-
-        const allText =
-          Array.from(doc.querySelectorAll("text"));
-
-        const labelElement = allText.find((el) =>
-          /Contributed\s+to/i.test(
-            el.textContent || ""
-          )
-        );
-
-        if (labelElement) {
-          const labelBox =
-            labelElement.getBoundingClientRect?.();
-
-          // Search nearby SVG text elements.
-          const labelY =
-            parseFloat(labelElement.getAttribute("y")) ||
-            0;
-
-          let nearest = null;
-          let nearestDistance = Infinity;
-
-          allText.forEach((el) => {
-            if (el === labelElement) return;
-
-            const value =
-              (el.textContent || "").trim();
-
-            if (!/^\d[\d,]*$/.test(value)) return;
-
-            const y =
-              parseFloat(el.getAttribute("y")) || 0;
-
-            const distance =
-              Math.abs(y - labelY);
-
-            if (distance < nearestDistance) {
-              nearestDistance = distance;
-              nearest = el;
-            }
-          });
-
-          if (nearest) {
-            nearest.textContent = repoCount;
-            text =
-              new XMLSerializer().serializeToString(
-                doc
-              );
-
-            countChanged = true;
-          }
-        }
-      } catch (domError) {
-        console.warn(
-          "DOM SVG parsing failed:",
-          domError
-        );
-      }
-    }
-
-    // ==========================================================
-    // SVG TEXT STYLING
-    //
-    // LIGHT:
-    // black + semibold
-    //
-    // DARK:
-    // original color + semibold
-    // ==========================================================
-
-    text = text.replace(
-      /<text\b([^>]*)>/gi,
-      (match, attrs) => {
-        let newAttrs = attrs;
-
-        // ------------------------------------------------------
-        // LIGHT THEME -> BLACK
-        // ------------------------------------------------------
+      // 5. SET ALL TEXT TO SEMI-BOLD (600) & HANDLE DARK/LIGHT COLORS
+      const allTexts = svg.querySelectorAll("text");
+      allTexts.forEach((element) => {
+        element.setAttribute("font-weight", "600");
 
         if (!darkMode) {
+          element.setAttribute("fill", "#000000");
+        } else {
+          const currentFill = element.getAttribute("fill");
           if (
-            /fill\s*=\s*["'][^"']*["']/i.test(
-              newAttrs
-            )
+            !currentFill ||
+            currentFill === "#000" ||
+            currentFill === "#000000"
           ) {
-            newAttrs = newAttrs.replace(
-              /fill\s*=\s*["'][^"']*["']/gi,
-              'fill="#000000"'
-            );
-          } else {
-            newAttrs += ' fill="#000000"';
+            element.setAttribute("fill", "#ffffff");
           }
         }
+      });
 
-        // ------------------------------------------------------
-        // BOTH THEMES -> SEMIBOLD
-        // ------------------------------------------------------
-
-        if (
-          /font-weight\s*=\s*["'][^"']*["']/i.test(
-            newAttrs
-          )
-        ) {
-          newAttrs = newAttrs.replace(
-            /font-weight\s*=\s*["'][^"']*["']/gi,
-            'font-weight="600"'
-          );
-        } else {
-          newAttrs += ' font-weight="600"';
-        }
-
-        return `<text${newAttrs}>`;
-      }
-    );
-
-    // ==========================================================
-    // RESPONSIVE SVG
-    // ==========================================================
-
-    text = text.replace(
-      /<svg\b([^>]*)>/i,
-      (match, attrs) => {
-        let newAttrs = attrs;
-
-        // width
-        if (/width\s*=\s*["'][^"']*["']/i.test(newAttrs)) {
-          newAttrs = newAttrs.replace(
-            /width\s*=\s*["'][^"']*["']/i,
-            'width="100%"'
-          );
-        }
-
-        // height
-        if (/height\s*=\s*["'][^"']*["']/i.test(newAttrs)) {
-          newAttrs = newAttrs.replace(
-            /height\s*=\s*["'][^"']*["']/i,
-            'height="100%"'
-          );
-        }
-
-        return `<svg${newAttrs}>`;
-      }
-    );
-
-    return text;
+      // 6. SERIALIZE SVG
+      return new XMLSerializer().serializeToString(doc);
+    } catch (err) {
+      console.warn("Could not modify GitHub Stats SVG:", err);
+      return svgText;
+    }
   };
 
   // ============================================================
@@ -402,7 +223,6 @@ const StatsCard = ({
 
   useEffect(() => {
     let cancelled = false;
-
     const controller = new AbortController();
 
     const timeoutId = setTimeout(() => {
@@ -421,46 +241,25 @@ const StatsCard = ({
         });
 
         if (!response.ok) {
-          throw new Error(
-            `Stats server returned ${response.status}`
-          );
+          throw new Error(`Stats server returned ${response.status}`);
         }
-
-        const contentType =
-          response.headers.get("content-type") || "";
 
         const rawSvg = await response.text();
 
         if (cancelled) return;
 
-        // ------------------------------------------------------
-        // Validate SVG
-        // ------------------------------------------------------
-
-        if (
-          !rawSvg.trim().startsWith("<svg") &&
-          !contentType.includes("svg")
-        ) {
-          throw new Error(
-            "Stats server did not return valid SVG"
-          );
+        if (!rawSvg.trim().startsWith("<svg")) {
+          throw new Error("Stats server did not return valid SVG");
         }
-
-        // ------------------------------------------------------
-        // Modify SVG
-        // ------------------------------------------------------
 
         const modifiedSvg = modifySvg(rawSvg);
 
         if (!modifiedSvg.includes("<svg")) {
-          throw new Error(
-            "Modified SVG is invalid"
-          );
+          throw new Error("Modified SVG is invalid");
         }
 
         if (!cancelled) {
           clearTimeout(timeoutId);
-
           setSvgHtml(modifiedSvg);
           setLoading(false);
           setError(false);
@@ -468,14 +267,8 @@ const StatsCard = ({
       } catch (err) {
         if (cancelled) return;
 
-        console.warn(
-          "Stats SVG processing failed:",
-          err
-        );
+        console.warn("Stats SVG processing failed:", err);
 
-        // IMPORTANT:
-        // Do NOT show error immediately.
-        // Let <img> fallback render the original card.
         setSvgHtml("");
         setLoading(false);
         setError(false);
@@ -492,7 +285,7 @@ const StatsCard = ({
   }, [cardUrl, publicRepos, darkMode]);
 
   // ============================================================
-  // IMAGE FALLBACK
+  // IMAGE FALLBACK HANDLERS
   // ============================================================
 
   const handleImageLoad = () => {
@@ -513,23 +306,18 @@ const StatsCard = ({
   };
 
   // ============================================================
-  // STYLES
+  // STYLES & DISPLAY VARS
   // ============================================================
 
   const cardBgClass = darkMode
     ? "galaxy-card text-white"
     : "bg-white border-slate-200 shadow-sm";
 
-  const titleColorClass = darkMode
-    ? "text-slate-200"
-    : "text-slate-800";
+  const titleColorClass = darkMode ? "text-slate-200" : "text-slate-800";
 
-  const innerBgClass = darkMode
-    ? "bg-slate-950/20"
-    : "bg-slate-50";
+  const innerBgClass = darkMode ? "bg-slate-950/20" : "bg-slate-50";
 
-  const hostDisplay =
-    currentHost.replace("https://", "");
+  const hostDisplay = currentHost.replace("https://", "");
 
   const isBackup = hostIndex > 0;
 
@@ -541,10 +329,7 @@ const StatsCard = ({
     <div
       className={`relative w-full border rounded-2xl p-4 sm:p-6 backdrop-blur-md shadow-xl flex flex-col items-center transition-colors duration-300 ${cardBgClass}`}
     >
-      {/* ======================================================
-          GALAXY BACKGROUND
-      ====================================================== */}
-
+      {/* Galaxy Background */}
       {darkMode && (
         <>
           <div className="galaxy-nebula-1" />
@@ -552,165 +337,86 @@ const StatsCard = ({
 
           <div
             className="star w-[1.5px] h-[1.5px]"
-            style={{
-              top: "15%",
-              left: "12%",
-              "--duration": "3s",
-            }}
+            style={{ top: "15%", left: "12%", "--duration": "3s" }}
           />
-
           <div
             className="star star-blue w-[2px] h-[2px]"
-            style={{
-              top: "45%",
-              left: "8%",
-              "--duration": "4s",
-            }}
+            style={{ top: "45%", left: "8%", "--duration": "4s" }}
           />
-
           <div
             className="star w-[1px] h-[1px]"
-            style={{
-              top: "75%",
-              left: "25%",
-              "--duration": "2.5s",
-            }}
+            style={{ top: "75%", left: "25%", "--duration": "2.5s" }}
           />
-
           <div
             className="star star-purple w-[1.5px] h-[1.5px]"
-            style={{
-              top: "25%",
-              left: "60%",
-              "--duration": "5s",
-            }}
+            style={{ top: "25%", left: "60%", "--duration": "5s" }}
           />
-
           <div
             className="star w-[2px] h-[2px]"
-            style={{
-              top: "85%",
-              left: "65%",
-              "--duration": "3.5s",
-            }}
+            style={{ top: "85%", left: "65%", "--duration": "3.5s" }}
           />
-
           <div
             className="star star-blue w-[1px] h-[1px]"
-            style={{
-              top: "10%",
-              left: "85%",
-              "--duration": "4.5s",
-            }}
+            style={{ top: "10%", left: "85%", "--duration": "4.5s" }}
           />
-
           <div
             className="star w-[1.5px] h-[1.5px]"
-            style={{
-              top: "50%",
-              left: "92%",
-              "--duration": "3s",
-            }}
+            style={{ top: "50%", left: "92%", "--duration": "3s" }}
           />
-
           <div
             className="star star-purple w-[2px] h-[2px]"
-            style={{
-              top: "80%",
-              left: "45%",
-              "--duration": "4.2s",
-            }}
+            style={{ top: "80%", left: "45%", "--duration": "4.2s" }}
           />
-
           <div
             className="star w-[1px] h-[1px]"
-            style={{
-              top: "60%",
-              left: "78%",
-              "--duration": "2.8s",
-            }}
+            style={{ top: "60%", left: "78%", "--duration": "2.8s" }}
           />
-
           <div
             className="star star-blue w-[1.5px] h-[1.5px]"
-            style={{
-              top: "35%",
-              left: "40%",
-              "--duration": "3.7s",
-            }}
+            style={{ top: "35%", left: "40%", "--duration": "3.7s" }}
           />
 
           <div
             className="shooting-star-element"
-            style={{
-              "--delay": "0s",
-              top: "5%",
-              right: "15%",
-            }}
+            style={{ "--delay": "0s", top: "5%", right: "15%" }}
           />
-
           <div
             className="shooting-star-element"
-            style={{
-              "--delay": "5s",
-              top: "12%",
-              right: "30%",
-            }}
+            style={{ "--delay": "5s", top: "12%", right: "30%" }}
           />
         </>
       )}
 
-      {/* ======================================================
-          HEADING
-      ====================================================== */}
-
+      {/* Heading */}
       <div className="flex items-center gap-2 mb-4 self-start z-10">
         <FiBarChart2 className="w-5 h-5 text-indigo-500" />
-
-        <h4
-          className={`font-bold text-xl ${titleColorClass}`}
-        >
-          GitHub Stats
-        </h4>
+        <h4 className={`font-bold text-xl ${titleColorClass}`}>GitHub Stats</h4>
       </div>
 
-      {/* ======================================================
-          CARD CONTENT
-      ====================================================== */}
-
+      {/* Stats Area */}
       <div
-        className={`relative w-full min-h-[195px] flex items-center justify-center rounded-xl overflow-hidden p-2 transition-colors duration-300 z-10 ${innerBgClass}`}
+        className={`relative w-full min-h-[195px] flex items-center justify-center rounded-xl p-2 transition-colors duration-300 z-10 ${innerBgClass}`}
       >
-        {/* Loading */}
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-slate-900/10 backdrop-blur-[1px] z-20">
             <FiLoader className="w-8 h-8 text-indigo-500 animate-spin" />
           </div>
         )}
 
-        {/* Error */}
         {error ? (
           <div className="text-center py-6 px-4">
             <p className="text-rose-500 text-sm font-semibold mb-1">
               Failed to load statistics card
             </p>
-
             <p
               className={`text-xs max-w-[260px] mx-auto leading-relaxed ${
-                darkMode
-                  ? "text-slate-400"
-                  : "text-slate-500"
+                darkMode ? "text-slate-400" : "text-slate-500"
               }`}
             >
-              Stats servers are currently unavailable.
-              Please retry later.
+              Stats servers are currently unavailable. Please retry later.
             </p>
           </div>
         ) : svgHtml ? (
-          /* ==================================================
-             MODIFIED SVG
-          ================================================== */
-
           <a
             href={cardUrl}
             target="_blank"
@@ -726,10 +432,6 @@ const StatsCard = ({
             />
           </a>
         ) : (
-          /* ==================================================
-             ORIGINAL IMAGE FALLBACK
-          ================================================== */
-
           <a
             href={cardUrl}
             target="_blank"
@@ -748,10 +450,7 @@ const StatsCard = ({
         )}
       </div>
 
-      {/* ======================================================
-          BACKUP NOTICE
-      ====================================================== */}
-
+      {/* Backup Notice */}
       {isBackup && !error && (
         <span className="text-[10px] text-amber-400/90 mt-2 font-medium bg-amber-500/10 px-2 py-0.5 rounded-full border border-amber-500/15 animate-pulse z-10">
           ⚠️ Loaded from backup: {hostDisplay}
