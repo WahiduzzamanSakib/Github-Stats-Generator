@@ -22,6 +22,8 @@ const Home = () => {
   const [statsHostType, setStatsHostType] = useState("default");
   const [customStatsHost, setCustomStatsHost] = useState("");
   const [statsHost, setStatsHost] = useState("https://github-readme-stats.vercel.app");
+  const [includeAllCommits, setIncludeAllCommits] = useState(true);
+  const [countPrivate, setCountPrivate] = useState(true);
 
   // Check URL query parameters for username on load (to support sharing)
   useEffect(() => {
@@ -132,11 +134,11 @@ const Home = () => {
 ![Profile Views](https://komarev.com/ghpvc/?username=${userData.login}&color=${getBadgeColor()}&style=flat-square)
 
 <!-- Stats Cards -->
-[![GitHub Stats](${statsHost}/api?username=${userData.login}&show_icons=true&theme=${getStatsTheme()}&bg_color=0f172a&title_color=f8fafc&text_color=94a3b8&icon_color=6366f1&hide_border=true)](https://github.com/anuraghazra/github-readme-stats)
+[![GitHub Stats](${statsHost}/api?username=${userData.login}&show_icons=true&theme=tokyonight&bg_color=30,070714,0d0d2b&hide_border=true${includeAllCommits ? "&include_all_commits=true" : ""}${countPrivate ? "&count_private=true" : ""})](https://github.com/anuraghazra/github-readme-stats)
 
-[![Top Languages](${statsHost}/api/top-langs/?username=${userData.login}&layout=compact&theme=${getStatsTheme()}&bg_color=0f172a&title_color=f8fafc&text_color=94a3b8&hide_border=true)](https://github.com/anuraghazra/github-readme-stats)
+[![Top Languages](${statsHost}/api/top-langs/?username=${userData.login}&layout=compact&theme=tokyonight&bg_color=30,070714,0d0d2b&hide_border=true)](https://github.com/anuraghazra/github-readme-stats)
 
-[![GitHub Streak](https://streak-stats.demolab.com/?user=${userData.login}&theme=${getStatsTheme()}&background=0f172a&ring=6366f1&fire=f97316&border=0f172a&hide_border=true)](https://streak-stats.demolab.com/)`
+[![GitHub Streak](https://streak-stats.demolab.com/?user=${userData.login}&theme=tokyonight&background=070714&ring=7aa2f7&fire=f97316&currStreakNum=ffffff&currStreakLabel=9ece6a&sideNums=ffffff&sideLabels=9ece6a&dates=a9b1d6&border=00000000&hide_border=true)](https://streak-stats.demolab.com/)`
     : "";
 
   return (
@@ -153,6 +155,9 @@ const Home = () => {
             Enter your GitHub username to generate beautiful profile cards, statistics summary widgets, and Markdown codes for your README.
           </p>
         </div>
+
+
+
 
         {/* Input/Search Area */}
         <SearchBox
@@ -207,10 +212,10 @@ const Home = () => {
               {/* Stats API Configuration Card */}
               <div className={`p-5 rounded-2xl border backdrop-blur-md shadow-lg ${themeCardBg} ${themeBorderClasses}`}>
                 <h4 className="font-bold mb-3 flex items-center gap-2 text-sm text-slate-300">
-                  <FiSettings className="w-4 h-4 text-black dark:text-indigo-400" /> Stats API Provider
+                  <FiSettings className="w-4 h-4 text-black dark:text-indigo-400" /> Stats API Configuration
                 </h4>
                 <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-                  Select which server to use for rendering statistics. Switch providers if default cards are rate-limited or broken.
+                  Select which server to use for rendering statistics and configure card options.
                 </p>
                 <div className="flex flex-col gap-3">
                   <select
@@ -231,6 +236,28 @@ const Home = () => {
                       className="w-full bg-slate-950 border border-slate-800 text-slate-300 text-xs px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
                     />
                   )}
+                  
+                  {/* Commits configuration checkboxes */}
+                  <div className="mt-2 flex flex-col gap-2 pt-2 border-t border-slate-850">
+                    <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer hover:text-slate-300">
+                      <input
+                        type="checkbox"
+                        checked={includeAllCommits}
+                        onChange={(e) => setIncludeAllCommits(e.target.checked)}
+                        className="rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-indigo-500/50 w-4 h-4"
+                      />
+                      <span>Include All-Time Commits</span>
+                    </label>
+                    <label className="flex items-center gap-2 text-xs text-slate-400 cursor-pointer hover:text-slate-300">
+                      <input
+                        type="checkbox"
+                        checked={countPrivate}
+                        onChange={(e) => setCountPrivate(e.target.checked)}
+                        className="rounded border-slate-800 bg-slate-950 text-indigo-600 focus:ring-indigo-500/50 w-4 h-4"
+                      />
+                      <span>Count Private Contributions</span>
+                    </label>
+                  </div>
                 </div>
               </div>
 
@@ -258,7 +285,15 @@ const Home = () => {
             <div className="lg:col-span-8 flex flex-col gap-6">
               {/* Widgets Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <StatsCard username={userData.login} theme={theme} statsHost={statsHost} darkMode={darkMode} />
+                <StatsCard
+                  username={userData.login}
+                  theme={theme}
+                  statsHost={statsHost}
+                  darkMode={darkMode}
+                  includeAllCommits={includeAllCommits}
+                  countPrivate={countPrivate}
+                  publicRepos={userData.public_repos}
+                />
                 <LanguageCard username={userData.login} theme={theme} statsHost={statsHost} darkMode={darkMode} />
               </div>
               <div>
