@@ -11,7 +11,8 @@ export const fetchGitHubUser = async (username) => {
     headers["Authorization"] = `token ${token}`;
   }
 
-  const response = await fetch(`https://api.github.com/users/${username}`, { headers });
+  const cleanUser = encodeURIComponent(username.trim());
+  const response = await fetch(`https://api.github.com/users/${cleanUser}`, { headers });
   
   if (!response.ok) {
     let errorMessage = "";

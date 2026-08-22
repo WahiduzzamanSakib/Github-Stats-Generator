@@ -23,18 +23,6 @@ const StreakCard = ({ username, theme, darkMode }) => {
     ? `https://streak-stats.demolab.com/?user=${username}&theme=${cardTheme}&background=00000000&ring=7aa2f7&fire=f97316&currStreakNum=ffffff&currStreakLabel=9ece6a&sideNums=ffffff&sideLabels=9ece6a&dates=a9b1d6&border=00000000&hide_border=true`
     : `https://streak-stats.demolab.com/?user=${username}&theme=${cardTheme}&background=ffffff&ring=6366f1&fire=f97316&currStreakNum=000000&currStreakLabel=475569&sideNums=000000&sideLabels=475569&dates=475569&border=ffffff&hide_border=true`;
 
-  const [prevProps, setPrevProps] = useState({ username, theme, darkMode });
-
-  if (
-    username !== prevProps.username ||
-    theme !== prevProps.theme ||
-    darkMode !== prevProps.darkMode
-  ) {
-    setPrevProps({ username, theme, darkMode });
-    setError(false);
-    setLoading(true);
-  }
-
   const cardBgClass = darkMode ? "galaxy-card text-white" : "bg-white border-slate-200 shadow-sm";
   const titleColorClass = darkMode ? "text-slate-200" : "text-slate-800";
   const innerBgClass = darkMode ? "bg-slate-950/20" : "bg-slate-50";

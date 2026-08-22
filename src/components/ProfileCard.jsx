@@ -1,9 +1,6 @@
-import { useRef } from "react";
 import { FiUsers, FiBookOpen, FiEye, FiExternalLink } from "react-icons/fi";
 
 const ProfileCard = ({ userData, theme }) => {
-  const cardRef = useRef(null);
-
   // Theme styling mapping
   const themeStyles = {
     default: {
@@ -48,9 +45,8 @@ const ProfileCard = ({ userData, theme }) => {
  
   return (
     <div className="w-full flex flex-col items-center">
-      {/* Profile Card Container (target for html-to-image) */}
+      {/* Profile Card Container */}
       <div
-        ref={cardRef}
         className={`w-full max-w-md rounded-2xl border backdrop-blur-md overflow-hidden shadow-xl transition-all duration-300 ${style.cardBg}`}
       >
         {/* Banner/Header */}

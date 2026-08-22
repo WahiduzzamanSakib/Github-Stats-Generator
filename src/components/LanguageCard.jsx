@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FiLoader, FiPieChart } from "react-icons/fi";
 
 const LanguageCard = ({
@@ -61,8 +61,8 @@ const LanguageCard = ({
   // ============================================================
 
   const langThemeParams = darkMode
-    ? `bg_color=00000000&theme=${cardTheme}`
-    : `bg_color=ffffff&theme=${cardTheme}&title_color=0f172a&text_color=334155`;
+    ? `bg_color=00000000&theme=${cardTheme}&title_color=ffffff&text_color=ffffff`
+    : `bg_color=ffffff&theme=${cardTheme}&title_color=000000&text_color=000000`;
 
   // ============================================================
   // CARD URL
@@ -71,35 +71,51 @@ const LanguageCard = ({
   const cardUrl = `${currentHost}/api/top-langs/?username=${username}&layout=compact&${langThemeParams}&hide_border=true`;
 
   // ============================================================
-  // TRACK PREVIOUS PROPS
+  // MODIFY SVG
   // ============================================================
 
-  const [prevProps, setPrevProps] = useState({
-    username,
-    statsHost,
-    theme,
-    darkMode,
-  });
+  const modifySvg = useCallback((svgText) => {
+    try {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(svgText, "image/svg+xml");
+      const svg = doc.querySelector("svg");
 
-  // Reset when props change
-  if (
-    username !== prevProps.username ||
-    statsHost !== prevProps.statsHost ||
-    theme !== prevProps.theme ||
-    darkMode !== prevProps.darkMode
-  ) {
-    setPrevProps({
-      username,
-      statsHost,
-      theme,
-      darkMode,
-    });
+      if (!svg) {
+        return svgText;
+      }
 
-    setHostIndex(0);
-    setError(false);
-    setLoading(true);
-    setSvgHtml("");
-  }
+      svg.setAttribute("width", "100%");
+      svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+
+      const textColor = darkMode ? "#ffffff" : "#000000";
+
+      // Set bold font-weight and color on all text/tspan elements
+      const allTexts = svg.querySelectorAll("text, tspan");
+      allTexts.forEach((element) => {
+        element.setAttribute("font-weight", "bold");
+        element.setAttribute("fill", textColor);
+        if (element.style) {
+          element.style.fontWeight = "bold";
+          element.style.fill = textColor;
+        }
+      });
+
+      // Inject style tag to ensure embedded CSS classes don't override font-weight and fill
+      const styleEl = doc.createElementNS("http://www.w3.org/2000/svg", "style");
+      styleEl.textContent = `
+        text, tspan {
+          font-weight: bold !important;
+          fill: ${textColor} !important;
+        }
+      `;
+      svg.appendChild(styleEl);
+
+      return new XMLSerializer().serializeToString(doc);
+    } catch (err) {
+      console.warn("Could not modify Top Languages SVG:", err);
+      return svgText;
+    }
+  }, [darkMode]);
 
   // ============================================================
   // FETCH SVG AND MODIFY TEXT
@@ -107,14 +123,13 @@ const LanguageCard = ({
 
   useEffect(() => {
     let active = true;
+    const controller = new AbortController();
+
+    const timeoutId = setTimeout(() => {
+      controller.abort();
+    }, 10000);
 
     const fetchSvg = async () => {
-      const controller = new AbortController();
-
-      const timeoutId = setTimeout(() => {
-        controller.abort();
-      }, 1500);
-
       try {
         setLoading(true);
         setError(false);
@@ -130,7 +145,7 @@ const LanguageCard = ({
           throw new Error("Failed to fetch SVG");
         }
 
-        let text = await response.text();
+        const text = await response.text();
 
         // ========================================================
         // VALIDATE SVG
@@ -143,85 +158,8 @@ const LanguageCard = ({
         }
 
         if (active) {
-          // ======================================================
-          // LIGHT THEME
-          //
-          // Every SVG text:
-          // color = black
-          // weight = 600
-          //
-          // DARK THEME:
-          // original color remains
-          // weight = 600
-          // ======================================================
-
-          text = text.replace(
-            /<text\b([^>]*)>/gi,
-            (match, attrs) => {
-              let newAttrs = attrs;
-
-              // Skip heading text
-              if (/data-testid=["']header["']/i.test(newAttrs)) {
-                return match;
-              }
-
-              // --------------------------------------------------
-              // LIGHT THEME
-              // Force all text to black
-              // --------------------------------------------------
-
-              if (!darkMode) {
-                if (
-                  /fill\s*=\s*["'][^"']*["']/i.test(
-                    newAttrs
-                  )
-                ) {
-                  newAttrs = newAttrs.replace(
-                    /fill\s*=\s*["'][^"']*["']/gi,
-                    'fill="#000000"'
-                  );
-                } else {
-                  newAttrs += ' fill="#000000"';
-                }
-              }
-
-              // --------------------------------------------------
-              // BOTH THEMES
-              // Semibold
-              // --------------------------------------------------
-
-              if (
-                /font-weight\s*=\s*["'][^"']*["']/i.test(
-                  newAttrs
-                )
-              ) {
-                newAttrs = newAttrs.replace(
-                  /font-weight\s*=\s*["'][^"']*["']/gi,
-                  'font-weight="600"'
-                );
-              } else {
-                newAttrs += ' font-weight="600"';
-              }
-
-              return `<text${newAttrs}>`;
-            }
-          );
-
-          // ======================================================
-          // RESPONSIVE SVG
-          // ======================================================
-
-          text = text.replace(
-            /width=["']\d+["']/i,
-            'width="100%"'
-          );
-
-          text = text.replace(
-            /height=["']\d+["']/i,
-            'height="100%"'
-          );
-
-          setSvgHtml(text);
+          const modifiedSvg = modifySvg(text);
+          setSvgHtml(modifiedSvg);
           setLoading(false);
         }
       } catch (err) {
@@ -242,8 +180,10 @@ const LanguageCard = ({
 
     return () => {
       active = false;
+      clearTimeout(timeoutId);
+      controller.abort();
     };
-  }, [cardUrl, darkMode]);
+  }, [cardUrl, modifySvg]);
 
   // ============================================================
   // IMAGE FALLBACK LOAD

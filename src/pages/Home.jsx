@@ -134,12 +134,12 @@ const Home = () => {
 
   // Build markdown parameters dynamically to match UI selection
   const mdStatsParams = darkMode
-    ? `theme=${selectedTheme}&bg_color=00000000`
-    : `theme=${selectedTheme}&bg_color=ffffff&title_color=0f172a&text_color=334155&icon_color=4f46e5`;
+    ? `theme=${selectedTheme}&bg_color=00000000&title_color=ffffff&text_color=ffffff&icon_color=ffffff`
+    : `theme=${selectedTheme}&bg_color=ffffff&title_color=000000&text_color=000000&icon_color=000000`;
 
   const mdLangParams = darkMode
-    ? `theme=${selectedTheme}&bg_color=00000000`
-    : `theme=${selectedTheme}&bg_color=ffffff&title_color=0f172a&text_color=334155`;
+    ? `theme=${selectedTheme}&bg_color=00000000&title_color=ffffff&text_color=ffffff`
+    : `theme=${selectedTheme}&bg_color=ffffff&title_color=000000&text_color=000000`;
 
   const streakThemeMap = {
     default: "radial",
@@ -188,6 +188,7 @@ const Home = () => {
 
         {/* Input/Search Area */}
         <SearchBox
+          key={username}
           onSearch={handleSearch}
           onReset={handleReset}
           showReset={!!userData}
@@ -195,11 +196,12 @@ const Home = () => {
           error={error}
           setError={setError}
           initialUsername={username}
+          darkMode={darkMode}
         />
 
         {/* Feature Stats */}
         {!userData && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div
               className={`p-5 rounded-2xl border backdrop-blur-md shadow-lg 
     transition-all duration-300 hover:-translate-y-2 hover:shadow-indigo-500/20 
@@ -249,14 +251,14 @@ const Home = () => {
                     value={statsHostType}
                     onChange={(e) => handleStatsHostTypeChange(e.target.value)}
                     className={`w-full border text-xs px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer font-semibold ${darkMode
-                        ? "bg-slate-950 border-slate-800 text-slate-300"
-                        : "bg-white border-slate-300 text-slate-750"
+                      ? "bg-slate-950 border-slate-800 text-slate-300"
+                      : "bg-white border-slate-300 text-slate-800"
                       }`}
                   >
                     <option value="default" className={darkMode ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>
-                      Default (github-stats-extended)</option>
+                      Default (github-readme-stats)</option>
                     <option value="extended" className={darkMode ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>
-                      Backup (github-readme-stats)</option>
+                      Alternative (github-stats-extended)</option>
                     <option value="custom" className={darkMode ? "bg-slate-900 text-slate-100" : "bg-white text-slate-800"}>Custom Self-Hosted URL</option>
                   </select>
                   {statsHostType === "custom" && (
@@ -266,8 +268,8 @@ const Home = () => {
                       onChange={(e) => handleCustomStatsHostChange(e.target.value)}
                       placeholder="https://your-custom-instance.vercel.app"
                       className={`w-full border text-xs px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/50 font-semibold ${darkMode
-                          ? "bg-slate-950 border-slate-800 text-slate-300"
-                          : "bg-white border-slate-300 text-slate-750"
+                        ? "bg-slate-950 border-slate-800 text-slate-300"
+                        : "bg-white border-slate-300 text-slate-800"
                         }`}
                     />
                   )}
@@ -313,7 +315,7 @@ const Home = () => {
                     type="text"
                     readOnly
                     value={shareUrl}
-                    className={`flex-1 border text-xs px-3 py-2 rounded-xl focus:outline-none font-semibold ${darkMode ? "bg-slate-950/60 border-slate-800 text-slate-300" : "bg-white border-slate-300 text-slate-750"
+                    className={`flex-1 border text-xs px-3 py-2 rounded-xl focus:outline-none font-semibold ${darkMode ? "bg-slate-950/60 border-slate-800 text-slate-300" : "bg-white border-slate-300 text-slate-800"
                       }`}
                   />
                   <CopyButton text={shareUrl} label="Copy" />
@@ -326,6 +328,7 @@ const Home = () => {
               {/* Widgets Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <StatsCard
+                  key={`${userData.login}-${statsHost}-${theme}-${darkMode}-${includeAllCommits}-${countPrivate}-${userData.public_repos}`}
                   username={userData.login}
                   theme={theme}
                   statsHost={statsHost}
@@ -334,10 +337,21 @@ const Home = () => {
                   countPrivate={countPrivate}
                   publicRepos={userData.public_repos}
                 />
-                <LanguageCard username={userData.login} theme={theme} statsHost={statsHost} darkMode={darkMode} />
+                <LanguageCard
+                  key={`${userData.login}-${statsHost}-${theme}-${darkMode}`}
+                  username={userData.login}
+                  theme={theme}
+                  statsHost={statsHost}
+                  darkMode={darkMode}
+                />
               </div>
               <div>
-                <StreakCard username={userData.login} theme={theme} darkMode={darkMode} />
+                <StreakCard
+                  key={`${userData.login}-${theme}-${darkMode}`}
+                  username={userData.login}
+                  theme={theme}
+                  darkMode={darkMode}
+                />
               </div>
 
               {/* Markdown Code Section */}

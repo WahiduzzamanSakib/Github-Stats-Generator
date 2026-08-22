@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { FiLoader, FiBarChart2 } from "react-icons/fi";
 
 const StatsCard = ({
@@ -49,9 +49,13 @@ const StatsCard = ({
     params.set("hide_border", "true");
 
     if (!darkMode) {
-      params.set("title_color", "0f172a");
-      params.set("text_color", "334155");
-      params.set("icon_color", "4f46e5");
+      params.set("title_color", "000000");
+      params.set("text_color", "000000");
+      params.set("icon_color", "000000");
+    } else {
+      params.set("title_color", "ffffff");
+      params.set("text_color", "ffffff");
+      params.set("icon_color", "ffffff");
     }
 
     if (includeAllCommits) {
@@ -72,26 +76,11 @@ const StatsCard = ({
     countPrivate,
   ]);
 
-  useEffect(() => {
-    setHostIndex(0);
-    setSvgHtml("");
-    setError(false);
-    setLoading(true);
-  }, [
-    username,
-    statsHost,
-    theme,
-    darkMode,
-    includeAllCommits,
-    countPrivate,
-    publicRepos,
-  ]);
-
   // ============================================================
   // MODIFY SVG
   // ============================================================
 
-  const modifySvg = (svgText) => {
+  const modifySvg = useCallback((svgText) => {
     try {
       const parser = new DOMParser();
       const doc = parser.parseFromString(svgText, "image/svg+xml");
@@ -126,6 +115,8 @@ const StatsCard = ({
       svg.setAttribute("width", "100%");
       svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
 
+      const textColor = darkMode ? "#ffffff" : "#000000";
+
       // 3. FIND TARGET NODE (Contributed to / Fallbacks)
       const allTextNodes = Array.from(svg.querySelectorAll("text"));
 
@@ -155,16 +146,13 @@ const StatsCard = ({
         const labelY = y + 36;
         const valueY = labelY + 20;
 
-        const labelColor = darkMode ? "#94a3b8" : "#475569";
-        const valueColor = darkMode ? "#ffffff" : "#0f172a";
-
         // LABEL
         const repoLabel = doc.createElementNS(ns, "text");
         repoLabel.setAttribute("x", String(x));
         repoLabel.setAttribute("y", String(labelY));
         repoLabel.setAttribute("font-size", "12");
-        repoLabel.setAttribute("font-weight", "600");
-        repoLabel.setAttribute("fill", labelColor);
+        repoLabel.setAttribute("font-weight", "bold");
+        repoLabel.setAttribute("fill", textColor);
         repoLabel.setAttribute("text-anchor", textAnchor);
         repoLabel.textContent = "Total Repositories:";
 
@@ -173,8 +161,8 @@ const StatsCard = ({
         repoNumber.setAttribute("x", String(x));
         repoNumber.setAttribute("y", String(valueY));
         repoNumber.setAttribute("font-size", "14");
-        repoNumber.setAttribute("font-weight", "600");
-        repoNumber.setAttribute("fill", valueColor);
+        repoNumber.setAttribute("font-weight", "bold");
+        repoNumber.setAttribute("fill", textColor);
         repoNumber.setAttribute("text-anchor", textAnchor);
         repoNumber.textContent = repoCount;
 
@@ -190,32 +178,34 @@ const StatsCard = ({
         }
       }
 
-      // 5. SET ALL TEXT TO SEMI-BOLD (600) & HANDLE DARK/LIGHT COLORS
-      const allTexts = svg.querySelectorAll("text");
+      // 5. SET ALL TEXT TO BOLD & HANDLE DARK/LIGHT COLORS
+      const allTexts = svg.querySelectorAll("text, tspan");
       allTexts.forEach((element) => {
-        element.setAttribute("font-weight", "600");
-
-        if (!darkMode) {
-          element.setAttribute("fill", "#000000");
-        } else {
-          const currentFill = element.getAttribute("fill");
-          if (
-            !currentFill ||
-            currentFill === "#000" ||
-            currentFill === "#000000"
-          ) {
-            element.setAttribute("fill", "#ffffff");
-          }
+        element.setAttribute("font-weight", "bold");
+        element.setAttribute("fill", textColor);
+        if (element.style) {
+          element.style.fontWeight = "bold";
+          element.style.fill = textColor;
         }
       });
 
-      // 6. SERIALIZE SVG
+      // 6. INJECT CSS TO OVERRIDE ANY EMBEDDED STYLES
+      const styleEl = doc.createElementNS("http://www.w3.org/2000/svg", "style");
+      styleEl.textContent = `
+        text, tspan {
+          font-weight: bold !important;
+          fill: ${textColor} !important;
+        }
+      `;
+      svg.appendChild(styleEl);
+
+      // 7. SERIALIZE SVG
       return new XMLSerializer().serializeToString(doc);
     } catch (err) {
       console.warn("Could not modify GitHub Stats SVG:", err);
       return svgText;
     }
-  };
+  }, [darkMode, publicRepos]);
 
   // ============================================================
   // FETCH SVG
@@ -282,7 +272,7 @@ const StatsCard = ({
       clearTimeout(timeoutId);
       controller.abort();
     };
-  }, [cardUrl, publicRepos, darkMode]);
+  }, [cardUrl, modifySvg]);
 
   // ============================================================
   // IMAGE FALLBACK HANDLERS
