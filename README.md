@@ -8,7 +8,6 @@
 [![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-8.2-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.3-38B2AC?style=for-the-badge&logo=tailwind-css)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
 <br />
 
@@ -24,7 +23,10 @@
 
 Users can customize themes, toggle between Light and Dark (Galaxy) modes, configure custom stats endpoints, and copy markdown code directly to their GitHub profile `README.md`.
 
+
+ Live Link: https://github-stats-generator.netlify.app
 ---
+
 
 ## ✨ Features
 
@@ -45,21 +47,6 @@ Users can customize themes, toggle between Light and Dark (Galaxy) modes, config
 - 📋 **One-Click Markdown Copy**: Instant copy button with fallback support for all browser environments.
 - 🔗 **Shareable URL Parameters**: Generate links with `?username=yourname` for direct sharing.
 
----
-
-## 🛠️ Tech Stack
-
-- **Framework**: [React 19](https://react.dev/)
-- **Build Tool**: [Vite](https://vitejs.dev/)
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
-- **Icons**: [React Icons](https://react-icons.github.io/react-icons/) (Feather Icons `react-icons/fi`)
-- **APIs & Services**:
-  - [GitHub REST API](https://docs.github.com/en/rest)
-  - [GitHub Readme Stats](https://github.com/anuraghazra/github-readme-stats)
-  - [GitHub Readme Streak Stats](https://github.com/DenverCoder1/github-readme-streak-stats)
-  - [GitHub Profile Views Counter](https://komarev.com/ghpvc/)
-
----
 
 ## 🔑 GitHub API Rate Limits
 
