@@ -99,9 +99,9 @@ const Home = () => {
     amber: darkMode ? "bg-slate-950 text-white" : "bg-amber-50/40 text-slate-900",
   };
 
-  const themeBorderClasses = darkMode ? "border-slate-800" : "border-slate-200";
+  const themeBorderClasses = "border-cyan-500 shadow-cyan-500/10";
   const themeSubtextClasses = darkMode ? "text-slate-400" : "text-slate-500";
-  const themeCardBg = darkMode ? "bg-slate-900/40" : "bg-white/80";
+  const themeCardBg = darkMode ? "bg-slate-900/60" : "bg-white/90";
 
   // Map theme to sub-badge theme
   const getBadgeColor = () => {
@@ -134,12 +134,12 @@ const Home = () => {
 
   // Build markdown parameters dynamically to match UI selection
   const mdStatsParams = darkMode
-    ? `theme=${selectedTheme}&bg_color=00000000&title_color=ffffff&text_color=ffffff&icon_color=ffffff`
-    : `theme=${selectedTheme}&bg_color=ffffff&title_color=000000&text_color=000000&icon_color=000000`;
+    ? `theme=${selectedTheme}&bg_color=00000000&title_color=ffffff&text_color=ffffff&icon_color=ffffff&border_color=06b6d4&border_radius=12`
+    : `theme=${selectedTheme}&bg_color=ffffff&title_color=000000&text_color=000000&icon_color=000000&border_color=06b6d4&border_radius=12`;
 
   const mdLangParams = darkMode
-    ? `theme=${selectedTheme}&bg_color=00000000&title_color=ffffff&text_color=ffffff`
-    : `theme=${selectedTheme}&bg_color=ffffff&title_color=000000&text_color=000000`;
+    ? `theme=${selectedTheme}&bg_color=00000000&title_color=ffffff&text_color=ffffff&border_color=06b6d4&border_radius=12`
+    : `theme=${selectedTheme}&bg_color=ffffff&title_color=000000&text_color=000000&border_color=06b6d4&border_radius=12`;
 
   const streakThemeMap = {
     default: "radial",
@@ -151,8 +151,8 @@ const Home = () => {
   const selectedStreakTheme = streakThemeMap[theme] || "radial";
 
   const mdStreakParams = darkMode
-    ? `theme=${selectedStreakTheme}&background=00000000&ring=7aa2f7&fire=f97316&currStreakNum=ffffff&currStreakLabel=9ece6a&sideNums=ffffff&sideLabels=9ece6a&dates=a9b1d6&border=00000000`
-    : `theme=${selectedStreakTheme}&background=ffffff&ring=6366f1&fire=f97316&currStreakNum=000000&currStreakLabel=475569&sideNums=000000&sideLabels=475569&dates=475569&border=ffffff`;
+    ? `theme=${selectedStreakTheme}&background=00000000&ring=06b6d4&fire=f97316&currStreakNum=ffffff&currStreakLabel=38bdf8&sideNums=ffffff&sideLabels=38bdf8&dates=a9b1d6&border=06b6d4&border_radius=12`
+    : `theme=${selectedStreakTheme}&background=ffffff&ring=06b6d4&fire=f97316&currStreakNum=000000&currStreakLabel=0284c7&sideNums=000000&sideLabels=0284c7&dates=475569&border=06b6d4&border_radius=12`;
 
   const markdownSnippet = userData
     ? `### GitHub Profile Stats
@@ -161,11 +161,11 @@ const Home = () => {
 ![Profile Views](https://komarev.com/ghpvc/?username=${userData.login}&color=${getBadgeColor()}&style=flat-square)
 
 <!-- Stats Cards -->
-[![GitHub Stats](${statsHost}/api?username=${userData.login}&show_icons=true&${mdStatsParams}&hide_border=true${includeAllCommits ? "&include_all_commits=true" : ""}${countPrivate ? "&count_private=true" : ""})](https://github.com/${userData.login})
+[![GitHub Stats](${statsHost}/api?username=${userData.login}&show_icons=true&${mdStatsParams}${includeAllCommits ? "&include_all_commits=true" : ""}${countPrivate ? "&count_private=true" : ""})](https://github.com/${userData.login})
 
-[![Top Languages](${statsHost}/api/top-langs/?username=${userData.login}&layout=compact&${mdLangParams}&hide_border=true)](https://github.com/${userData.login})
+[![Top Languages](${statsHost}/api/top-langs/?username=${userData.login}&layout=compact&${mdLangParams})](https://github.com/${userData.login})
 
-[![GitHub Streak](https://streak-stats.demolab.com/?user=${userData.login}&${mdStreakParams}&hide_border=true)](https://github.com/${userData.login})`
+[![GitHub Streak](https://streak-stats.demolab.com/?user=${userData.login}&${mdStreakParams})](https://github.com/${userData.login})`
     : "";
 
   return (
@@ -203,27 +203,27 @@ const Home = () => {
         {!userData && (
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
             <div
-              className={`p-5 rounded-2xl border backdrop-blur-md shadow-lg 
-    transition-all duration-300 hover:-translate-y-2 hover:shadow-indigo-500/20 
-    hover:border-indigo-400 cursor-pointer ${themeCardBg} ${themeBorderClasses}`}
+              className={`p-5 rounded-2xl border border-cyan-500 backdrop-blur-md shadow-lg 
+    transition-all duration-300 hover:-translate-y-2 hover:shadow-cyan-500/20 
+    hover:border-cyan-400 cursor-pointer ${themeCardBg}`}
             >
               <h3 className="text-xl font-bold mb-2">⚡ Fast</h3>
               <p className={themeSubtextClasses}>Instant Generation</p>
             </div>
 
             <div
-              className={`p-5 rounded-2xl border backdrop-blur-md shadow-lg 
-    transition-all duration-300 hover:-translate-y-2 hover:shadow-purple-500/20 
-    hover:border-purple-400 cursor-pointer ${themeCardBg} ${themeBorderClasses}`}
+              className={`p-5 rounded-2xl border border-cyan-500 backdrop-blur-md shadow-lg 
+    transition-all duration-300 hover:-translate-y-2 hover:shadow-cyan-500/20 
+    hover:border-cyan-400 cursor-pointer ${themeCardBg}`}
             >
               <h3 className="text-xl font-bold mb-2">🎨 Themes</h3>
               <p className={themeSubtextClasses}>Multiple Styles</p>
             </div>
 
             <div
-              className={`p-5 rounded-2xl border backdrop-blur-md shadow-lg 
-    transition-all duration-300 hover:-translate-y-2 hover:shadow-blue-500/20 
-    hover:border-blue-400 cursor-pointer ${themeCardBg} ${themeBorderClasses}`}
+              className={`p-5 rounded-2xl border border-cyan-500 backdrop-blur-md shadow-lg 
+    transition-all duration-300 hover:-translate-y-2 hover:shadow-cyan-500/20 
+    hover:border-cyan-400 cursor-pointer ${themeCardBg}`}
             >
               <h3 className="text-xl font-bold mb-2">📄 README</h3>
               <p className={themeSubtextClasses}>Ready Markdown</p>

@@ -68,7 +68,7 @@ const LanguageCard = ({
   // CARD URL
   // ============================================================
 
-  const cardUrl = `${currentHost}/api/top-langs/?username=${username}&layout=compact&${langThemeParams}&hide_border=true`;
+  const cardUrl = `${currentHost}/api/top-langs/?username=${username}&layout=compact&${langThemeParams}&border_color=06b6d4&border_radius=12&hide_border=false`;
 
   // ============================================================
   // MODIFY SVG
@@ -86,6 +86,7 @@ const LanguageCard = ({
 
       svg.setAttribute("width", "100%");
       svg.setAttribute("preserveAspectRatio", "xMidYMid meet");
+      svg.setAttribute("style", "border: 2px solid #06b6d4 !important; border-radius: 12px; box-shadow: 0 0 14px rgba(6, 182, 212, 0.35);");
 
       const textColor = darkMode ? "#ffffff" : "#000000";
 
@@ -106,6 +107,10 @@ const LanguageCard = ({
         text, tspan {
           font-weight: bold !important;
           fill: ${textColor} !important;
+        }
+        svg {
+          border: 2px solid #06b6d4 !important;
+          border-radius: 12px !important;
         }
       `;
       svg.appendChild(styleEl);
@@ -214,16 +219,16 @@ const LanguageCard = ({
   // ============================================================
 
   const cardBgClass = darkMode
-    ? "galaxy-card text-white"
-    : "bg-white border-slate-200 shadow-sm";
+    ? "galaxy-card text-white border-cyan-500"
+    : "bg-white border-cyan-500 shadow-sm cyan-card-border";
 
   const titleColorClass = darkMode
     ? "text-slate-200"
     : "text-slate-800";
 
   const innerBgClass = darkMode
-    ? "bg-slate-950/20"
-    : "bg-slate-50";
+    ? "bg-transparent"
+    : "bg-cyan-50/20 border border-cyan-500/20";
 
   const hostDisplay = currentHost.replace(
     "https://",

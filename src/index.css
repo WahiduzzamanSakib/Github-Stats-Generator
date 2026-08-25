@@ -1,31 +1,36 @@
 @import "tailwindcss";
 
-/* Animated Starry/Galaxy Background for Cards */
+/* Animated Starry/Galaxy Background for Cards with Cyan Border */
 .galaxy-card {
   position: relative;
   background: linear-gradient(135deg, #070714 0%, #0d0d2b 50%, #050515 100%) !important;
-  border: 1px solid rgba(99, 102, 241, 0.25) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(99, 102, 241, 0.15) !important;
+  border: 1px solid #06b6d4 !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), 0 0 15px rgba(6, 182, 212, 0.25), inset 0 0 20px rgba(6, 182, 212, 0.15) !important;
   overflow: hidden;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
 .galaxy-card:hover {
-  border-color: rgba(99, 102, 241, 0.5) !important;
-  box-shadow: 0 8px 32px 0 rgba(99, 102, 241, 0.3), inset 0 0 25px rgba(99, 102, 241, 0.25) !important;
+  border-color: #22d3ee !important;
+  box-shadow: 0 8px 32px 0 rgba(6, 182, 212, 0.4), 0 0 25px rgba(6, 182, 212, 0.4), inset 0 0 25px rgba(6, 182, 212, 0.25) !important;
 }
 
 /* Starry Sky Animation Effects */
+@keyframes galaxy-pulse {
+  0%, 100% { transform: scale(1) translate(0, 0); opacity: 0.25; }
+  50% { transform: scale(1.15) translate(10px, -10px); opacity: 0.4; }
+}
+
 @keyframes twinkle-star {
   0%, 100% { opacity: 0.25; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.2); }
+  50% { opacity: 1; transform: scale(1.3); }
 }
 
 @keyframes shooting-star {
   0% { transform: translateX(0) translateY(0) rotate(-45deg); opacity: 0; }
   8% { opacity: 1; }
-  18% { transform: translateX(-120px) translateY(120px) rotate(-45deg); opacity: 0; }
-  100% { transform: translateX(-120px) translateY(120px) rotate(-45deg); opacity: 0; }
+  22% { transform: translateX(-140px) translateY(140px) rotate(-45deg); opacity: 0; }
+  100% { transform: translateX(-140px) translateY(140px) rotate(-45deg); opacity: 0; }
 }
 
 /* Nebulas inside the card */
@@ -35,10 +40,11 @@
   left: -20%;
   width: 80%;
   height: 80%;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.25) 0%, transparent 70%);
   filter: blur(40px);
   pointer-events: none;
   z-index: 0;
+  animation: galaxy-pulse 8s ease-in-out infinite alternate;
 }
 
 .galaxy-nebula-2 {
@@ -47,10 +53,11 @@
   right: -20%;
   width: 80%;
   height: 80%;
-  background: radial-gradient(circle, rgba(236, 72, 153, 0.12) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%);
   filter: blur(40px);
   pointer-events: none;
   z-index: 0;
+  animation: galaxy-pulse 10s ease-in-out infinite alternate-reverse;
 }
 
 /* Star styles */
@@ -60,11 +67,11 @@
   border-radius: 50%;
   pointer-events: none;
   z-index: 0;
-  animation: twinkle-star var(--duration) ease-in-out infinite;
+  animation: twinkle-star var(--duration, 3s) ease-in-out infinite;
 }
 
 .star-blue {
-  background-color: #60a5fa;
+  background-color: #38bdf8;
 }
 
 .star-purple {
@@ -81,7 +88,14 @@
   transform: rotate(-45deg);
   pointer-events: none;
   animation: shooting-star 10s linear infinite;
-  animation-delay: var(--delay);
+  animation-delay: var(--delay, 0s);
+  z-index: 0;
 }
+
+.cyan-card-border {
+  border-color: #06b6d4 !important;
+  box-shadow: 0 0 12px rgba(6, 182, 212, 0.25);
+}
+
 
 

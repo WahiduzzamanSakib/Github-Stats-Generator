@@ -47,15 +47,24 @@ const ProfileCard = ({ userData, theme }) => {
     <div className="w-full flex flex-col items-center">
       {/* Profile Card Container */}
       <div
-        className={`w-full max-w-md rounded-2xl border backdrop-blur-md overflow-hidden shadow-xl transition-all duration-300 ${style.cardBg}`}
+        className={`w-full max-w-md rounded-2xl border border-cyan-500 backdrop-blur-md overflow-hidden shadow-xl transition-all duration-300 galaxy-card relative`}
       >
+        {/* Galaxy Background Stars & Nebulas */}
+        <div className="galaxy-nebula-1" />
+        <div className="galaxy-nebula-2" />
+        <div className="star w-[1.5px] h-[1.5px]" style={{ top: "15%", left: "10%", "--duration": "3s" }} />
+        <div className="star star-blue w-[2px] h-[2px]" style={{ top: "40%", left: "85%", "--duration": "4.2s" }} />
+        <div className="star star-purple w-[1.5px] h-[1.5px]" style={{ top: "70%", left: "15%", "--duration": "3.5s" }} />
+        <div className="star w-[1px] h-[1px]" style={{ top: "80%", left: "75%", "--duration": "2.8s" }} />
+        <div className="shooting-star-element" style={{ "--delay": "1.5s", top: "5%", right: "20%" }} />
+
         {/* Banner/Header */}
-        <div className={`h-24 bg-gradient-to-r ${style.headerBg} relative`} />
+        <div className={`h-24 bg-gradient-to-r ${style.headerBg} relative z-10`} />
 
         {/* Content */}
-        <div className="px-6 pb-6 pt-0 relative flex flex-col items-center text-center">
+        <div className="px-6 pb-6 pt-0 relative z-10 flex flex-col items-center text-center">
           {/* Avatar (overlapping banner) */}
-          <div className="w-24 h-24 rounded-full border-4 border-slate-900 overflow-hidden -mt-12 shadow-lg bg-slate-800">
+          <div className="w-24 h-24 rounded-full border-4 border-cyan-500 overflow-hidden -mt-12 shadow-lg bg-slate-800">
             <img
               src={userData.avatar_url}
               alt={userData.name || userData.login}
@@ -85,23 +94,23 @@ const ProfileCard = ({ userData, theme }) => {
           )}
 
           {/* Stats Badges */}
-          <div className="grid grid-cols-2 gap-4 w-full mt-6 pt-6 border-t border-slate-800/80">
-            <div className="flex flex-col items-center p-3 bg-slate-800/40 rounded-xl border border-slate-800/50">
-              <FiUsers className="w-5 h-5 text-slate-400 mb-1" />
+          <div className="grid grid-cols-2 gap-4 w-full mt-6 pt-6 border-t border-cyan-500/30">
+            <div className="flex flex-col items-center p-3 bg-slate-900/60 rounded-xl border border-cyan-500/30">
+              <FiUsers className="w-5 h-5 text-cyan-400 mb-1" />
               <span className="text-lg font-bold text-white">{userData.followers}</span>
               <span className="text-xs text-slate-400">Followers</span>
             </div>
-            <div className="flex flex-col items-center p-3 bg-slate-800/40 rounded-xl border border-slate-800/50">
-              <FiBookOpen className="w-5 h-5 text-slate-400 mb-1" />
+            <div className="flex flex-col items-center p-3 bg-slate-900/60 rounded-xl border border-cyan-500/30">
+              <FiBookOpen className="w-5 h-5 text-cyan-400 mb-1" />
               <span className="text-lg font-bold text-white">{userData.public_repos}</span>
               <span className="text-xs text-slate-400">Repositories</span>
             </div>
           </div>
 
           {/* Profile Views */}
-          <div className="flex flex-col items-center w-full mt-4 p-3 bg-slate-800/40 rounded-xl border border-slate-800/50">
+          <div className="flex flex-col items-center w-full mt-4 p-3 bg-slate-900/60 rounded-xl border border-cyan-500/30">
             <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-2">
-              <FiEye className="w-4 h-4" />
+              <FiEye className="w-4 h-4 text-cyan-400" />
               <span>Profile Views</span>
             </div>
             <img

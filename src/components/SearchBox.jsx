@@ -33,8 +33,8 @@ const SearchBox = ({
   };
 
   const inputBgClass = darkMode
-    ? "bg-slate-800/80 border-slate-700 hover:border-slate-600 focus:border-indigo-500 text-white placeholder-slate-400"
-    : "bg-white border-slate-300 hover:border-slate-400 focus:border-indigo-500 text-slate-900 placeholder-slate-400 shadow-sm";
+    ? "bg-slate-900/80 border-cyan-500 hover:border-cyan-400 focus:border-cyan-400 text-white placeholder-slate-400 shadow-cyan-500/10"
+    : "bg-white border-cyan-500 hover:border-cyan-600 focus:border-cyan-500 text-slate-900 placeholder-slate-400 shadow-cyan-500/10";
 
   const resetBtnClass = darkMode
     ? "bg-slate-700/50 hover:bg-slate-700 text-slate-300 hover:text-white border-slate-700/50"

@@ -46,7 +46,9 @@ const StatsCard = ({
     params.set("show_icons", "true");
     params.set("bg_color", darkMode ? "00000000" : "ffffff");
     params.set("theme", cardTheme);
-    params.set("hide_border", "true");
+    params.set("border_color", "06b6d4");
+    params.set("border_radius", "12");
+    params.set("hide_border", "false");
 
     if (!darkMode) {
       params.set("title_color", "000000");
@@ -189,12 +191,18 @@ const StatsCard = ({
         }
       });
 
-      // 6. INJECT CSS TO OVERRIDE ANY EMBEDDED STYLES
+      // 6. INJECT CSS TO OVERRIDE ANY EMBEDDED STYLES & ADD CYAN-500 BORDER
+      svg.setAttribute("style", "border: 2px solid #06b6d4 !important; border-radius: 12px; box-shadow: 0 0 14px rgba(6, 182, 212, 0.35);");
+
       const styleEl = doc.createElementNS("http://www.w3.org/2000/svg", "style");
       styleEl.textContent = `
         text, tspan {
           font-weight: bold !important;
           fill: ${textColor} !important;
+        }
+        svg {
+          border: 2px solid #06b6d4 !important;
+          border-radius: 12px !important;
         }
       `;
       svg.appendChild(styleEl);
@@ -300,12 +308,12 @@ const StatsCard = ({
   // ============================================================
 
   const cardBgClass = darkMode
-    ? "galaxy-card text-white"
-    : "bg-white border-slate-200 shadow-sm";
+    ? "galaxy-card text-white border-cyan-500"
+    : "bg-white border-cyan-500 shadow-sm cyan-card-border";
 
   const titleColorClass = darkMode ? "text-slate-200" : "text-slate-800";
 
-  const innerBgClass = darkMode ? "bg-slate-950/20" : "bg-slate-50";
+  const innerBgClass = darkMode ? "bg-transparent" : "bg-cyan-50/20 border border-cyan-500/20";
 
   const hostDisplay = currentHost.replace("https://", "");
 
