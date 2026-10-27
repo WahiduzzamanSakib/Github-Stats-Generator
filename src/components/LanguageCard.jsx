@@ -418,7 +418,7 @@ const LanguageCard = ({
           >
             <img
               src={cardUrl}
-              alt={`${username}'s Top Languages`}
+              alt={`${username}'s most used programming languages chart`}
               className={`w-full max-w-lg transition-opacity duration-300 ${
                 loading
                   ? "opacity-0"

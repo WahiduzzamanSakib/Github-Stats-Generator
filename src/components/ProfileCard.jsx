@@ -67,7 +67,7 @@ const ProfileCard = ({ userData, theme }) => {
           <div className="w-24 h-24 rounded-full border-4 border-cyan-500 overflow-hidden -mt-12 shadow-lg bg-slate-800">
             <img
               src={userData.avatar_url}
-              alt={userData.name || userData.login}
+              alt={`${userData.name || userData.login}'s GitHub avatar`}
               className="w-full h-full object-cover"
             />
           </div>
@@ -115,7 +115,7 @@ const ProfileCard = ({ userData, theme }) => {
             </div>
             <img
               src={`https://komarev.com/ghpvc/?username=${userData.login}&color=${style.badgeColor}&style=flat-square`}
-              alt="Profile Views"
+              alt={`${userData.name || userData.login}'s profile views counter badge`}
               className="h-5"
             />
           </div>

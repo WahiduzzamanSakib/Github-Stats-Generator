@@ -3,34 +3,104 @@
 
 <head>
   <meta charset="UTF-8" />
-
-  <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#020617" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
   <meta name="google-site-verification" content="cv49Gito-D-w7ldOp4K6BWhN3isvrVkxv2Guas7af4k" />
 
-  <title>Github Profile Stats Generator</title>
+  <!-- Favicons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="alternate icon" type="image/x-icon" href="/favicon.ico" />
 
-  <meta property="og:image" content="https://github-stats-generator.netlify.app/preview.png" />
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://github-stats-generator.netlify.app/" />
 
+  <!-- Primary Meta Tags -->
+  <title>GitHub Stats Generator - Create GitHub Profile Readme Stats &amp; Cards</title>
+  <meta name="title" content="GitHub Stats Generator - Create GitHub Profile Readme Stats &amp; Cards" />
   <meta name="description"
-    content="Generate beautiful GitHub profile statistics, contribution charts, and developer insights using GitHub Stats Generator." />
-
-  <meta name="keywords"
-    content="GitHub Stats Generator, GitHub Profile Stats, GitHub Stats, GitHub Analytics, GitHub Contribution Graph, GitHub Contributions, GitHub Profile Generator, GitHub README Generator, GitHub Coding Stats, GitHub Repository Stats, GitHub Developer Analytics, Developer Portfolio" />
-
+    content="Generate beautiful, real-time GitHub profile statistics cards, streak counters, top programming language charts, and Markdown snippets for your GitHub profile README." />
   <meta name="author" content="Md. Waheduzzaman" />
 
-  <meta property="og:title" content="GitHub Stats Generator - Create GitHub Profile Stats" />
-  <meta property="og:description" content="Create beautiful GitHub statistics and developer insights." />
+  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://github-stats-generator.netlify.app" />
+  <meta property="og:site_name" content="GitHub Stats Generator" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:url" content="https://github-stats-generator.netlify.app/" />
+  <meta property="og:title" content="GitHub Stats Generator - Create GitHub Profile Readme Stats &amp; Cards" />
+  <meta property="og:description"
+    content="Generate beautiful, real-time GitHub profile statistics cards, streak counters, top programming language charts, and Markdown snippets for your GitHub profile README." />
+  <meta property="og:image" content="https://github-stats-generator.netlify.app/preview.png" />
+  <meta property="og:image:secure_url" content="https://github-stats-generator.netlify.app/preview.png" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="GitHub Stats Generator - Create GitHub Profile Stats and README Cards" />
 
-  <link rel="canonical" href="https://github-stats-generator.netlify.app" />
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://github-stats-generator.netlify.app/" />
+  <meta name="twitter:title" content="GitHub Stats Generator - Create GitHub Profile Readme Stats &amp; Cards" />
+  <meta name="twitter:description"
+    content="Generate beautiful, real-time GitHub profile statistics cards, streak counters, top programming language charts, and Markdown snippets for your GitHub profile README." />
+  <meta name="twitter:image" content="https://github-stats-generator.netlify.app/preview.png" />
+  <meta name="twitter:image:alt" content="GitHub Stats Generator - Create GitHub Profile Stats and README Cards" />
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://github-stats-generator.netlify.app/#website",
+        "url": "https://github-stats-generator.netlify.app/",
+        "name": "GitHub Stats Generator",
+        "description": "Generate beautiful GitHub profile statistics, contribution streaks, top language charts, and README markdown widgets.",
+        "inLanguage": "en-US",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://github-stats-generator.netlify.app/?username={search_term_string}"
+          },
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "WebApplication",
+        "@id": "https://github-stats-generator.netlify.app/#webapp",
+        "name": "GitHub Stats Generator",
+        "url": "https://github-stats-generator.netlify.app/",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "All",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "description": "Create customizable GitHub profile statistics cards, streak stats, top languages charts, and markdown snippets for GitHub profiles.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "author": {
+          "@type": "Person",
+          "name": "Md. Wahiduzzaman",
+          "url": "https://waheduzzaman.vercel.app"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 
 <body>
   <div id="root"></div>
+  <noscript>
+    <div style="padding: 2rem; font-family: system-ui, -apple-system, sans-serif; text-align: center; color: #333;">
+      <h1>GitHub Stats Generator</h1>
+      <p>Generate beautiful, real-time GitHub profile statistics cards, streak counters, top programming language charts, and Markdown snippets for your GitHub profile README.</p>
+      <p>Please enable JavaScript in your browser to use the interactive generator.</p>
+    </div>
+  </noscript>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 

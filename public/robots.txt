@@ -1,0 +1,6 @@
+# Robots.txt for GitHub Stats Generator
+User-agent: *
+Allow: /
+
+# Host & Sitemap
+Sitemap: https://github-stats-generator.netlify.app/sitemap.xml

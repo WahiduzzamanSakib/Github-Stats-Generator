@@ -66,6 +66,77 @@ const Home = () => {
     }
   }, []);
 
+  // Update document title, metadata, and structured data dynamically
+  useEffect(() => {
+    const defaultTitle = "GitHub Stats Generator - Create GitHub Profile Readme Stats & Cards";
+    const defaultDesc =
+      "Generate beautiful, real-time GitHub profile statistics cards, streak counters, top programming language charts, and Markdown snippets for your GitHub profile README.";
+    const defaultUrl = "https://github-stats-generator.netlify.app/";
+
+    const metaDesc = document.querySelector('meta[name="description"]');
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    const ogDesc = document.querySelector('meta[property="og:description"]');
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    const twitterTitle = document.querySelector('meta[name="twitter:title"]');
+    const twitterDesc = document.querySelector('meta[name="twitter:description"]');
+    const canonicalLink = document.querySelector('link[rel="canonical"]');
+
+    if (userData) {
+      const displayName = userData.name ? `${userData.name} (@${userData.login})` : `@${userData.login}`;
+      const pageTitle = `${displayName}'s GitHub Stats | GitHub Stats Generator`;
+      const pageDesc = `View and generate GitHub profile statistics cards, streak widgets, and top programming languages chart for ${displayName}.`;
+      const currentUrl = `https://github-stats-generator.netlify.app/?username=${encodeURIComponent(userData.login)}`;
+
+      document.title = pageTitle;
+      if (metaDesc) metaDesc.setAttribute("content", pageDesc);
+      if (ogTitle) ogTitle.setAttribute("content", pageTitle);
+      if (ogDesc) ogDesc.setAttribute("content", pageDesc);
+      if (ogUrl) ogUrl.setAttribute("content", currentUrl);
+      if (twitterTitle) twitterTitle.setAttribute("content", pageTitle);
+      if (twitterDesc) twitterDesc.setAttribute("content", pageDesc);
+      if (canonicalLink) canonicalLink.setAttribute("href", currentUrl);
+
+      // Dynamic JSON-LD for ProfilePage
+      let profileScript = document.getElementById("profile-jsonld");
+      if (!profileScript) {
+        profileScript = document.createElement("script");
+        profileScript.id = "profile-jsonld";
+        profileScript.type = "application/ld+json";
+        document.head.appendChild(profileScript);
+      }
+      profileScript.textContent = JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "ProfilePage",
+        "name": `${displayName}'s GitHub Profile Stats`,
+        "url": currentUrl,
+        "mainEntity": {
+          "@type": "Person",
+          "name": userData.name || userData.login,
+          "alternateName": userData.login,
+          "identifier": userData.login,
+          "description": userData.bio || undefined,
+          "image": userData.avatar_url,
+          "url": userData.html_url
+        }
+      });
+    } else {
+      document.title = defaultTitle;
+      if (metaDesc) metaDesc.setAttribute("content", defaultDesc);
+      if (ogTitle) ogTitle.setAttribute("content", defaultTitle);
+      if (ogDesc) ogDesc.setAttribute("content", defaultDesc);
+      if (ogUrl) ogUrl.setAttribute("content", defaultUrl);
+      if (twitterTitle) twitterTitle.setAttribute("content", defaultTitle);
+      if (twitterDesc) twitterDesc.setAttribute("content", defaultDesc);
+      if (canonicalLink) canonicalLink.setAttribute("href", defaultUrl);
+
+      const profileScript = document.getElementById("profile-jsonld");
+      if (profileScript) {
+        profileScript.remove();
+      }
+    }
+  }, [userData]);
+
+
   const handleStatsHostTypeChange = (type) => {
     setStatsHostType(type);
     if (type === "default") {
@@ -175,9 +246,9 @@ const Home = () => {
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Hero Header */}
         <div className="text-center mb-10">
-          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent mb-3">
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 via-indigo-400 to-purple-400 bg-clip-text text-transparent mb-3">
             Build Your GitHub Profile Cards
-          </h2>
+          </h1>
           <p className={`text-sm sm:text-base max-w-lg mx-auto ${themeSubtextClasses}`}>
             Enter your GitHub username to generate beautiful profile cards, statistics summary widgets, and Markdown codes for your README.
           </p>

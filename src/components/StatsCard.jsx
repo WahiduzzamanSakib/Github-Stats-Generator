@@ -439,7 +439,7 @@ const StatsCard = ({
           >
             <img
               src={cardUrl}
-              alt={`${username}'s GitHub Stats`}
+              alt={`${username}'s GitHub profile statistics card`}
               className="w-full max-w-lg"
               onLoad={handleImageLoad}
               onError={handleImageError}

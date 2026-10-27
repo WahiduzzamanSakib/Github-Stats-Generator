@@ -55,6 +55,7 @@ const SearchBox = ({
           value={usernameInput}
           onChange={(e) => setUsernameInput(e.target.value)}
           placeholder="Enter GitHub username (e.g. torvalds)"
+          aria-label="GitHub username"
           className={`w-full pl-12 py-4 border rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all duration-300 shadow-lg text-base ${inputBgClass} ${
             showReset ? "pr-44" : "pr-32"
           }`}
@@ -68,6 +69,7 @@ const SearchBox = ({
               onClick={handleReset}
               disabled={loading}
               title="Reset search and clear stats"
+              aria-label="Reset search"
               className={`p-2.5 active:scale-95 disabled:opacity-50 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center border ${resetBtnClass}`}
             >
               <FiX className="w-4 h-4" />
@@ -76,6 +78,7 @@ const SearchBox = ({
           <button
             type="submit"
             disabled={loading}
+            aria-label="Generate GitHub stats"
             className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:from-slate-700 disabled:to-slate-800 text-white font-medium rounded-xl transition-all duration-300 shadow-md shadow-indigo-500/10 hover:shadow-indigo-500/20 active:scale-95 disabled:active:scale-100 disabled:cursor-not-allowed cursor-pointer"
           >
             {loading ? "Fetching..." : "Generate"}

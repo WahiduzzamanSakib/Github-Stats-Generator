@@ -260,7 +260,7 @@ const StreakCard = ({ username, theme, darkMode }) => {
           >
             <img
               src={cardUrl}
-              alt={`${username}'s GitHub Streak`}
+              alt={`${username}'s GitHub contribution streak statistics`}
               className={`w-full max-w-lg border-2 border-cyan-500 rounded-xl shadow-lg shadow-cyan-500/20 transition-opacity duration-300 ${
                 loading ? "opacity-0" : "opacity-100"
               }`}
